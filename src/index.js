@@ -138,7 +138,11 @@ export default function promiseMiddleware(config = {}) {
        * }
        */
       const promiseValue = promise.then(transformFulfill);
-      const sideEffects = promiseValue.then(handleFulfill, handleReject);
+      const sideEffects = promiseValue.then(handleFulfill, handleReject).catch((e) => {
+        if (window && typeof window.onerror === 'function') {
+          window.onerror(e);
+        }
+      });
       return sideEffects.then(() => promiseValue, () => promiseValue);
     };
   };
